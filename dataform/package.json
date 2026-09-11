@@ -1,0 +1,6 @@
+{
+  "name": "data-engineering-home-assignment",
+  "dependencies": {
+    "@dataform/core": "3.0.0"
+  }
+}

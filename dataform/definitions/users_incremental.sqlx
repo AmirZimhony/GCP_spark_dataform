@@ -1,0 +1,22 @@
+config {
+  type: "incremental",
+  uniqueKey: ["user_id"],
+  schema: "curated",
+  tags: ["incremental"],
+  description: "Latest user row per user_id, merged from the GCS external table.",
+  bigquery: {
+    partitionBy: "DATE(updated_at)",
+    clusterBy: ["user_id"]
+  }
+}
+
+SELECT
+  user_id,
+  name,
+  email,
+  TIMESTAMP(updated_at) AS updated_at
+FROM ${ref("raw_users")}
+${when(
+  incremental(),
+  `WHERE TIMESTAMP(updated_at) > (SELECT COALESCE(MAX(updated_at), TIMESTAMP("1970-01-01")) FROM ${self()})`
+)}

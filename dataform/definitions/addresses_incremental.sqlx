@@ -1,0 +1,23 @@
+config {
+  type: "incremental",
+  uniqueKey: ["address_id"],
+  schema: "curated",
+  tags: ["incremental"],
+  description: "Latest address row per address_id, merged from the GCS external table.",
+  bigquery: {
+    partitionBy: "DATE(updated_at)",
+    clusterBy: ["user_id"]
+  }
+}
+
+SELECT
+  address_id,
+  user_id,
+  city,
+  street,
+  TIMESTAMP(updated_at) AS updated_at
+FROM ${ref("raw_addresses")}
+${when(
+  incremental(),
+  `WHERE TIMESTAMP(updated_at) > (SELECT COALESCE(MAX(updated_at), TIMESTAMP("1970-01-01")) FROM ${self()})`
+)}

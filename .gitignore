@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+data/*.csv
+.df-credentials.json
+dataform/.df-credentials.json
+dataform/node_modules/

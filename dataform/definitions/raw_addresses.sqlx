@@ -1,0 +1,22 @@
+config {
+  type: "operations",
+  hasOutput: true,
+  schema: "raw",
+  tags: ["raw"],
+  description: "External table over addresses.csv in GCS."
+}
+
+CREATE OR REPLACE EXTERNAL TABLE ${self()} (
+  address_id INT64,
+  user_id INT64,
+  city STRING,
+  street STRING,
+  updated_at STRING
+)
+OPTIONS (
+  format = "CSV",
+  uris = ["gs://${dataform.projectConfig.vars.gcsBucket}/${dataform.projectConfig.vars.gcsPrefix}/addresses.csv"],
+  skip_leading_rows = 1,
+  field_delimiter = ",",
+  allow_quoted_newlines = true
+);

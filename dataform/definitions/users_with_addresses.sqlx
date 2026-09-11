@@ -1,0 +1,26 @@
+config {
+  type: "table",
+  schema: "curated",
+  tags: ["mart"],
+  description: "Users joined to their addresses.",
+  bigquery: {
+    clusterBy: ["city", "user_id"]
+  },
+  assertions: {
+    uniqueKey: ["user_id"],
+    nonNull: ["user_id"]
+  }
+}
+
+SELECT
+  u.user_id,
+  u.name,
+  u.email,
+  a.address_id,
+  a.city,
+  a.street,
+  u.updated_at AS user_updated_at,
+  a.updated_at AS address_updated_at
+FROM ${ref("users_incremental")} AS u
+LEFT JOIN ${ref("addresses_incremental")} AS a
+  ON u.user_id = a.user_id
