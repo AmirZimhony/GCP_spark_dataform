@@ -2,7 +2,7 @@ config {
   type: "incremental",
   uniqueKey: ["address_id"],
   tags: ["incremental"],
-  description: "Latest address row per address_id, merged from the GCS external table.",
+  description: "Incrementally upserts addresses from the existing BigQuery addresses table.",
   bigquery: {
     partitionBy: "DATE(updated_at)",
     clusterBy: ["user_id"]
@@ -14,9 +14,13 @@ SELECT
   user_id,
   city,
   street,
-  TIMESTAMP(updated_at) AS updated_at
-FROM ${ref("raw_addresses")}
+  CAST(updated_at AS TIMESTAMP) AS updated_at
+FROM `project-d2e743fd-f7fe-4894-a24.home_Assignments.addresses`
+
 ${when(
   incremental(),
-  `WHERE TIMESTAMP(updated_at) > (SELECT COALESCE(MAX(updated_at), TIMESTAMP("1970-01-01")) FROM ${self()})`
+  `WHERE CAST(updated_at AS TIMESTAMP) > (
+    SELECT COALESCE(MAX(updated_at), TIMESTAMP('1970-01-01'))
+    FROM ${self()}
+  )`
 )}

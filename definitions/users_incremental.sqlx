@@ -2,7 +2,7 @@ config {
   type: "incremental",
   uniqueKey: ["user_id"],
   tags: ["incremental"],
-  description: "Latest user row per user_id, merged from the GCS external table.",
+  description: "Incrementally upserts users from the existing BigQuery users table.",
   bigquery: {
     partitionBy: "DATE(updated_at)",
     clusterBy: ["user_id"]
@@ -13,9 +13,13 @@ SELECT
   user_id,
   name,
   email,
-  TIMESTAMP(updated_at) AS updated_at
-FROM ${ref("raw_users")}
+  CAST(updated_at AS TIMESTAMP) AS updated_at
+FROM `project-d2e743fd-f7fe-4894-a24.home_Assignments.users`
+
 ${when(
   incremental(),
-  `WHERE TIMESTAMP(updated_at) > (SELECT COALESCE(MAX(updated_at), TIMESTAMP("1970-01-01")) FROM ${self()})`
+  `WHERE CAST(updated_at AS TIMESTAMP) > (
+    SELECT COALESCE(MAX(updated_at), TIMESTAMP('1970-01-01'))
+    FROM ${self()}
+  )`
 )}
