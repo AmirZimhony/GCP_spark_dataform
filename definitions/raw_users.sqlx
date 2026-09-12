@@ -1,7 +1,6 @@
 config {
   type: "operations",
   hasOutput: true,
-  schema: "raw",
   tags: ["raw"],
   description: "External table over users.csv in GCS."
 }
