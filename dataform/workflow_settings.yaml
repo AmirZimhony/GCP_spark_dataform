@@ -1,8 +1,8 @@
-defaultProject: YOUR_GCP_PROJECT
-defaultLocation: europe-west1
+defaultProject: project-d2e743fd-f7fe-4894-a24
+defaultLocation: EU
 defaultDataset: curated
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.0
 vars:
-  gcsBucket: YOUR_GCS_BUCKET
+  gcsBucket: home_assignments
   gcsPrefix: data
