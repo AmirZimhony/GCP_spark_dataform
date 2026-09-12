@@ -6,15 +6,14 @@ Generate 1M users/addresses, load them to GCS, model them in BigQuery with Dataf
 .
 ├── data_generator/
 │   └── generate_data.py
-├── dataform/
-│   ├── workflow_settings.yaml
-│   ├── package.json
-│   └── definitions/
-│       ├── raw_users.sqlx
-│       ├── raw_addresses.sqlx
-│       ├── users_incremental.sqlx
-│       ├── addresses_incremental.sqlx
-│       └── users_with_addresses.sqlx
+├── workflow_settings.yaml
+├── package.json
+├── definitions/
+│   ├── raw_users.sqlx
+│   ├── raw_addresses.sqlx
+│   ├── users_incremental.sqlx
+│   ├── addresses_incremental.sqlx
+│   └── users_with_addresses.sqlx
 ├── dataproc/
 │   └── city_user_counts.py
 ├── scripts/
@@ -51,7 +50,7 @@ Files land at `gs://$GCS_BUCKET/data/users.csv` and `gs://$GCS_BUCKET/data/addre
 
 ## 3. Dataform (BigQuery)
 
-Edit [`dataform/workflow_settings.yaml`](dataform/workflow_settings.yaml):
+Edit [`workflow_settings.yaml`](workflow_settings.yaml):
 
 - `defaultProject`: GCP project
 - `defaultLocation`: BigQuery location
@@ -64,7 +63,6 @@ Pipeline:
 3. `users_with_addresses` — users left-joined to addresses
 
 ```bash
-cd dataform
 npm install
 npx @dataform/cli compile
 npx @dataform/cli run
