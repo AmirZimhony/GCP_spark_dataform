@@ -1,6 +1,6 @@
 defaultProject: project-d2e743fd-f7fe-4894-a24
 defaultLocation: EU
-defaultDataset: curated
+defaultDataset: home_Assignments
 defaultAssertionDataset: dataform_assertions
 dataformCoreVersion: 3.0.0
 vars:

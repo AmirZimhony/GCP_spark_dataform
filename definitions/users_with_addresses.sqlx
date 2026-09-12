@@ -1,6 +1,5 @@
 config {
   type: "table",
-  schema: "curated",
   tags: ["mart"],
   description: "Users joined to their addresses.",
   bigquery: {
