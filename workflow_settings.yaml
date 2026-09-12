@@ -1,8 +1,12 @@
 defaultProject: project-d2e743fd-f7fe-4894-a24
+<<<<<<< HEAD
+defaultLocation: europe-west1
+defaultDataset: curated
+=======
 defaultLocation: EU
 defaultDataset: home_Assignments
+>>>>>>> refs/heads/master
 defaultAssertionDataset: dataform_assertions
-dataformCoreVersion: 3.0.0
 vars:
   gcsBucket: home_assignments
   gcsPrefix: data
