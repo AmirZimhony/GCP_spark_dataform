@@ -1,43 +1,27 @@
-#!/usr/bin/env python3
-"""Count distinct users per city. Intended to run on Dataproc."""
-
-from __future__ import annotations
-
-import argparse
-
 from pyspark.sql import SparkSession
-from pyspark.sql import functions as F
 
+spark = SparkSession.builder.appName("city-user-count").getOrCreate()
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Count distinct users per city")
-    parser.add_argument(
-        "--input",
-        required=True,
-        help="GCS or local path to addresses.csv",
+spark.conf.set("spark.sql.adaptive.enabled", "false")
+spark.conf.set("spark.sql.shuffle.partitions", "20")
+
+df = (
+    spark.read
+    .format("bigquery")
+    .option(
+        "table",
+        "project-d2e743fd-f7fe-4894-a24.home_Assignments.users_with_addresses"
     )
-    parser.add_argument(
-        "--output",
-        required=True,
-        help="GCS or local directory for city,user_count CSV",
-    )
-    return parser.parse_args()
+    .load()
+)
 
+# Force ALL rows to shuffle according to city.
+skewed = df.repartition(20, "city")
 
-def main() -> None:
-    args = parse_args()
-    spark = SparkSession.builder.appName("city_user_counts").getOrCreate()
+# Then perform the required summary.
+result = skewed.groupBy("city").count()
 
-    addresses = spark.read.option("header", True).csv(args.input)
-    counts = (
-        addresses.groupBy("city")
-        .agg(F.countDistinct("user_id").alias("user_count"))
-        .orderBy(F.col("user_count").desc(), F.col("city"))
-    )
-    counts.coalesce(1).write.mode("overwrite").option("header", True).csv(args.output)
+print("AQE:", spark.conf.get("spark.sql.adaptive.enabled"))
+result.explain("formatted")
 
-    spark.stop()
-
-
-if __name__ == "__main__":
-    main()
+result.show(100, truncate=False)
