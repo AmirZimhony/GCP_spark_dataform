@@ -1,4 +1,6 @@
-# Data engineering home assignment
+# Users and addresses data pipeline
+
+This repository is confidential. Do not copy, share, or republish it.
 
 Generate 1M users/addresses, load them to GCS, model them in BigQuery with Dataform, and count users per city on Dataproc.
 
@@ -70,21 +72,13 @@ npx @dataform/cli run
 
 ## 4. Dataproc — users per city
 
+`dataproc/city_user_counts.py` reads `home_Assignments.users_with_addresses` from BigQuery (not the GCS CSVs). It disables AQE, repartitions by `city` into 20 partitions, then `groupBy("city").count()`. The job prints a formatted Spark plan and the city counts (Tel Aviv should be 500,000).
+
+Submit as a serverless batch. `--deps-bucket` only stages the `.py` file for Dataproc; the table data still comes from BigQuery.
+
 ```bash
-gcloud dataproc jobs submit pyspark dataproc/city_user_counts.py \
-  --cluster=YOUR_CLUSTER \
+gcloud dataproc batches submit pyspark dataproc/city_user_counts.py \
   --region=europe-west1 \
-  -- \
-  --input=gs://$GCS_BUCKET/data/addresses.csv \
-  --output=gs://$GCS_BUCKET/output/city_user_counts
-```
-
-Writes a single CSV with `city,user_count`, ordered by count descending. Tel Aviv should be 500,000.
-
-Local check (if Spark is installed):
-
-```bash
-spark-submit dataproc/city_user_counts.py \
-  --input=data/addresses.csv \
-  --output=/tmp/city_user_counts
+  --version=2.3 \
+  --deps-bucket=gs://home_assignments
 ```

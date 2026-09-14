@@ -1,5 +1,5 @@
 {
-  "name": "data-engineering-home-assignment",
+  "name": "users-addresses-pipeline",
   "dependencies": {
     "@dataform/core": "3.0.0"
   }
